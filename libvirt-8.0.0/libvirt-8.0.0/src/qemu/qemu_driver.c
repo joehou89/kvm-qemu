@@ -13914,34 +13914,46 @@ static int qemuDomainQemuMonitorCommand(virDomainPtr domain, const char *cmd,
     qemuDomainObjPrivate *priv;
     bool hmp;
 
+    //检查flags标记是否合法，仅允许HMP标记
     virCheckFlags(VIR_DOMAIN_QEMU_MONITOR_COMMAND_HMP, -1);
 
+    //获取虚拟机对象
     if (!(vm = qemuDomainObjFromDomain(domain)))
         goto cleanup;
 
+    //权限检查，验证调用者是否有权限调执行该操作
     if (virDomainQemuMonitorCommandEnsureACL(domain->conn, vm->def) < 0)
         goto cleanup;
 
+    //开始一个“QUERY”类型的作业，防止并发操作干扰
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
         goto cleanup;
 
+    //检查虚拟机是否处于活跃状态
     if (virDomainObjCheckActive(vm) < 0)
         goto endjob;
 
     priv = vm->privateData;
 
+    //标记虚机为"tained" 表示执行过自定义monitor命令
     qemuDomainObjTaint(driver, vm, VIR_DOMAIN_TAINT_CUSTOM_MONITOR, NULL);
 
+    //判断是否是HMP命令(human Monitor Protocol)
     hmp = !!(flags & VIR_DOMAIN_QEMU_MONITOR_COMMAND_HMP);
 
+    //进入qemu monitor 上下文
     qemuDomainObjEnterMonitor(driver, vm);
+    //调用该接口发送命令,其实是一层嵌套，最终会调用qemuMonitorSend 走rpc发送出去
     ret = qemuMonitorArbitraryCommand(priv->mon, cmd, result, hmp);
+    //退出qemu monitor 上下文
     qemuDomainObjExitMonitor(driver, vm);
 
  endjob:
+    //结束作业
     qemuDomainObjEndJob(driver, vm);
 
  cleanup:
+    //释放虚机对象引用
     virDomainObjEndAPI(&vm);
     return ret;
 }

@@ -14931,6 +14931,18 @@ const vshCmdDef domManagementCmds[] = {
      .info = info_qemu_attach,
      .flags = 0
     },
+
+    /*TODO:此处会提前注册好对应virsh命令的处理函数
+    
+    比如讯飞云存储对openstack虚拟机挂载的卷进行热迁移操作：
+    (nova-libvirt)[root@rgccz-compute005 /]# virsh qemu-monitor-command instance-00000885 --pretty 
+    '{"execute":"drive-mirror","arguments":{"job-id": "mirror0","device":"libvirt-1-format",
+    "target":"rbd:sata_pool/volume-ec0e79b1-059e-4202-9fae-fdfe381786f1:auth_supported=none:mon_host=172.31.189.55\\:6789",
+    "sync":"full","format":"raw","mode":"existing"}}'
+
+    功能说明:
+    该命令通过libvirt API将用户输入的JSON指令转发到QEMU Monitor Protocol(QMP),最终会调用qemu的底层接口
+    */
     {.name = "qemu-monitor-command",
      .handler = cmdQemuMonitorCommand,
      .opts = opts_qemu_monitor_command,

@@ -2949,6 +2949,17 @@ void qmp_blockdev_backup(BlockdevBackup *backup, Error **errp)
     blockdev_do_action(&action, errp);
 }
 
+
+/*
+TODO:最终调用该函数
+块设备镜像流程:
+1.初始化镜像任务:创建MirrorBlockJob 对象， 关联源设备(libvirt-1-format)和目标设备(如: rbd:sata_pool/volume-xxx)
+2.数据同步:
+  * 全量同步(sync: full): 将源设备的全部数据拷贝到目标设备：
+  * 目标存储配置: 通过rbd协议写入ceph集群
+3.完成回调: 镜像完成后触发mirror_exit, 通知libvirt任务状态;
+*/
+
 /* Parameter check and block job starting for drive mirroring.
  * Caller should hold @device and @target's aio context (must be the same).
  **/

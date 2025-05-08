@@ -1957,6 +1957,8 @@
 # <- { "return": {} }
 #
 ##
+#TODO: 源码分析添加解析
+#QEMU的QMP命令处理函数在该处定义drive-mirror的接口
 { 'command': 'drive-mirror', 'boxed': true,
   'data': 'DriveMirror' }
 

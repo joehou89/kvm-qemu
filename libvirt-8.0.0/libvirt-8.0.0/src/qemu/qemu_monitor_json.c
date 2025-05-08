@@ -283,6 +283,11 @@ int qemuMonitorJSONIOProcess(qemuMonitor *mon,
     return used;
 }
 
+/*libvirt处理请求
+1.参数解析: virsh 解析命令行参数，调用qemuMonitorJSONCommandWithFd函数
+2.消息封装: 将JSON指令封装为QMP格式
+3.通信通道：通过qemuMonitorSend函数将消息写入与QEMU的通信套接字
+*/
 static int
 qemuMonitorJSONCommandWithFd(qemuMonitor *mon,
                              virJSONValue *cmd,

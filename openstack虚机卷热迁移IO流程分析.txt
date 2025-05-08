@@ -1,0 +1,18 @@
+
+
+
+virsh-domain.c
+cmdQemuMonitorCommand
+  |virDomainQemuMonitorCommand  libvirt-qemu.c 
+    |domainQemuMonitorCommand
+	  | domainQemuMonitorCommand
+	      | qemuDomainQemuMonitorCommand
+            |qemuMonitorArbitraryCommand
+			  |qemuMonitorJSONHumanCommand
+			    |qemuMonitorJSONCommand    qemu_monitor_json.c
+				  | 
+                  |qemuMonitorJSONCommandWithFd
+                  |qemuMonitorSend -----------------------> |blockdev.c
+	                                                        |blockdev_mirror_common
+								             			    | mirror_start (mirror.c)
+											        	    |mirror_start_job 
